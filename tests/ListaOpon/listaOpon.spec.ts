@@ -16,34 +16,59 @@ test.beforeAll(async ({ browser }) => {
 test("TLO-01 - Dodanie opony", async () => {
   const listaOponPage = new ListaOponPage(page);
   await listaOponPage.open();
-  await page.getByRole("link", { name: "Dodaj nową oponę" }).click();
+  await listaOponPage.add();
   const tire = listaOponPage.generateTireData();
   await listaOponPage.fillAddForm(tire);
   await listaOponPage.save();
 
-  // minimalna, sensowna asercja
-  await expect(page.getByText(tire.kod)).toBeVisible();
+  //Asercja
+  await listaOponPage.expectTireRow(tire);
 });
 test("TLO-02 - Edycja Opony", async () => {
-  await page.goto(`/Opony`);
-  await page.getByRole("link", { name: "Edytuj" }).first().click();
-  await page.locator("#Typ").fill("Testowa opona+1");
-  await page.locator("#Producent").fill("Test+1");
-  await page.locator("#Rozmiar").fill("1234567+1");
-  await page.locator("#Bieznik").fill("test+1");
-  await page.locator("#Sezon").fill("zima+1");
-  await page.locator("#RokProdukcji").fill("2025+1");
-  await page.locator("#KodTowaru").fill("111111111111111111+1");
-  await page.getByRole("button", { name: "Zapisz zmiany" }).click();
+  const listaOponPage = new ListaOponPage(page);
 
-  //brak assercji
+  // Dodanie opony
+  await listaOponPage.open();
+  await listaOponPage.add();
+  const tire = listaOponPage.generateTireData();
+
+  await listaOponPage.fillAddForm(tire);
+  await listaOponPage.save();
+
+  await listaOponPage.expectTireRow(tire);
+
+  // Edycja tej samej opony
+  const updatedTire = {
+    ...tire,
+    typ: `${tire.typ} - EDIT`,
+    producent: `${tire.producent} - EDIT`,
+  };
+
+  await listaOponPage.openEditByCode(tire.kod);
+  await listaOponPage.fillEditForm(updatedTire);
+  await listaOponPage.save();
+
+  // Asercja
+  await listaOponPage.expectTireRow(updatedTire);
 });
-test("TLO-03 - Usunięcie Opony", async () => {
-  await page.goto(`/Opony`);
-  await page.getByRole("link", { name: "Usuń" }).first().click();
-  await page.getByRole("button", { name: "Usuń" }).click();
+test("TLO-03 - Usunięcie opony", async () => {
+  const listaOponPage = new ListaOponPage(page);
 
-  //brak assercji i wyboru konkretnego rekordu
+  // Dodanie opony
+  await listaOponPage.open();
+  await listaOponPage.add();
+  const tire = listaOponPage.generateTireData();
+
+  await listaOponPage.fillAddForm(tire);
+  await listaOponPage.save();
+
+  await listaOponPage.expectTireRow(tire);
+
+  // Usunięcie tej konkretnej oponyH
+  await listaOponPage.deleteTire(tire.kod);
+
+  // Opona nie istnieje na liście
+  await listaOponPage.expectTireNotPresent(tire.kod);
 });
 test("TLO-04 - Walidacje pól wymaganych", async () => {
   await page.goto(`/Opony`);
