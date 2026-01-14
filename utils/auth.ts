@@ -1,7 +1,7 @@
 import { Page, expect } from "@playwright/test";
 
 export async function login(page: Page) {
-  await page.goto(`/${process.env.DEPOZYT_URL}`);
+  await page.goto(`/`);
   await page
     .getByRole("textbox", { name: "Email" })
     .fill(`${process.env.USER02}`);
