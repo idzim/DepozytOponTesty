@@ -67,6 +67,9 @@ export class ListaOponPage {
   async remove() {
     await this.page.getByRole("button", { name: "Usuń" }).click();
   }
+  async clickOK() {
+    await this.page.getByRole("button", { name: "OK" }).click();
+  }
 
   async expectTireRow(tire: {
     kod: string;

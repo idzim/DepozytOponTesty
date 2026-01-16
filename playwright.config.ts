@@ -13,6 +13,7 @@ export default defineConfig({
   use: {
     baseURL: process.env.BASE_URL,
     trace: "off",
+    screenshot: "only-on-failure",
   },
 
   projects: [
