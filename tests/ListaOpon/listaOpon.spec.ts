@@ -12,7 +12,7 @@ test.beforeAll(async ({ browser }) => {
   await login(page);
 });
 
-test.describe("@listaOpon - Lista Opon", () => {
+test.describe("@listaOpon - Lista Opon @regresja", () => {
   test("TLO-01 - Dodanie opony", async () => {
     const listaOponPage = new ListaOponPage(page);
     await listaOponPage.open();

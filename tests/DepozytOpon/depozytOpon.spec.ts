@@ -12,7 +12,7 @@ test.beforeAll(async ({ browser }) => {
   await login(page);
 });
 
-test.describe("@depozytOpon - Depozyt Opon", () => {
+test.describe("@depozytOpon - Depozyt Opon @regresja", () => {
   test("TDO-01 - Dodanie depozytu", async () => {
     const depozytPage = new DepozytOponPage(page);
     await depozytPage.open();
@@ -79,14 +79,17 @@ test.describe("@depozytOpon - Depozyt Opon", () => {
 
   test("TDO-04 - Walidacje pól wymaganych (NumerBox)", async () => {
     // Otwórz formularz dodawania i spróbuj zapisać bez numeru boxu
-    await page.goto(`/DepozytOpon`);
-    await page.getByRole("link", { name: "Dodaj nowy depozyt" }).click();
-    await page.getByRole("button", { name: "Zapisz" }).click();
+    const depozytPage = new DepozytOponPage(page);
 
+    // Dodaj pierwszy depozyt z określonym numerem boxu
+    await depozytPage.open();
+    await depozytPage.add();
+    await depozytPage.save();
+    await page.pause();
     // Asercja
-    await expect(page.locator("id=NumerBox-error")).toBeVisible();
-    await expect(page.locator("id=NumerBox-error")).toHaveText(
-      "Numer Box jest wymagany"
+    await expect(page.locator("#NumerBOX-error")).toBeVisible();
+    await expect(page.locator("#NumerBOX-error")).toHaveText(
+      "Numer BOX jest wymagany"
     );
   });
 
@@ -110,7 +113,7 @@ test.describe("@depozytOpon - Depozyt Opon", () => {
     await depozytPage.save();
 
     // Asercja - komunikat o duplikacie
-    await expect(page.locator("span[data-valmsg-for]")).toHaveText(
+    await expect(page.locator('span[data-valmsg-for="NumerBOX"]')).toHaveText(
       "Depozyt o podanym numerze BOX już istnieje"
     );
   });
